@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Proxy Server</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Go Proxy Server</h1>
+    <form id="proxyForm">
+        <label for="url">Enter URL to Proxy:</label>
+        <input type="text" id="url" name="url" required>
+        <button type="submit">Proxy</button>
+    </form>
+    <h2>Response</h2>
+    <div id="response"></div>
+    <h2>Logs</h2>
+    <div id="logs"></div>
+    <script>
+        async function fetchLogs() {
+            const response = await fetch('/logs');
+            const logs = await response.text();
+            document.getElementById('logs').innerText = logs;
+        }
+
+        async function fetchResponse(url) {
+            const responseDiv = document.getElementById('response');
+            try {
+                const response = await fetch(`/proxy?url=${encodeURIComponent(url)}`);
+                const data = await response.text();
+                responseDiv.innerText = data;
+            } catch (error) {
+                responseDiv.innerText = 'Error fetching the response';
+            }
+        }
+
+        document.getElementById('proxyForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            fetchResponse(url);
+            fetchLogs(); // Fetch logs once after submitting
+        });
+    </script>
+</body>
+</html>
